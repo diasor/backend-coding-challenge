@@ -1,0 +1,21 @@
+database:
+ driverClass: com.mysql.cj.jdbc.Driver
+ url: jdbc:mysql://localhost/engExpenses
+ user: root
+ password: 2ff898e158cd0311
+ maxWaitForConnection: 1s
+ validationQuery: "SELECT 1"
+ validationQueryTimeout: 3s
+ minSize: 8
+ maxSize: 32
+ checkConnectionWhileIdle: false
+ evictionInterval: 10s
+ minIdleTime: 1 minute
+ checkConnectionOnBorrow: true
+server:
+  applicationConnectors:
+    - type: http
+      port: 9090
+  adminConnectors:
+    - type: http
+      port: 9091

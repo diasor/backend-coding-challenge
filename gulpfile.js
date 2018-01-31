@@ -46,6 +46,7 @@ try {
 	var tasksGit = require("./tasks-git.js");
 	var tasksMisc = require("./tasks-misc.js");
 	var connect = require("gulp-connect");
+    //var cors = require('cors');
 }
 catch (error) {
 	console.log(error);
@@ -156,9 +157,12 @@ gulp.task("html", function() {
 
 // Compile an individual directory's partials
 function compilePartials(filepath) {
+	/* DS: This code is commented because when the app is used in Windows OS,
+	it can not find "partial.js"
 	if (process.platform === "win32")
 		var pathArray = filepath.split("\\");
 	else
+		*/
 		var pathArray = filepath.split("/");
 
 	pathArray.pop();
@@ -173,9 +177,9 @@ function compilePartials(filepath) {
 			htmlMinifier: settings.minifiy,
 			module: basename + ".partials",
 			path: function(path, base) {
-				if (!base.endsWith("partials/"))
+				/*if (!base.endsWith("partials/"))
 					base += "partials/";
-
+				*/
 				return basename + "/" + path.replace(base, "");
 			}
 		}))
@@ -390,6 +394,7 @@ gulp.task("apps", gulpsync.sync(["gitinfo", "uncompressed", "copyfrom", "html", 
 
 gulp.task("server", ["dev"], function() {
 	connect.server({ root: config.target });
+
 });
 
 // Present help info

@@ -35,10 +35,11 @@
 			<div class="col-15">Reason</div>
 		</div>
 		<div ng-repeat="expense in expenses" class="body-row">
-			<div class="col-4">{{expense.date | date:'dd MMM yyyy'}}</div>
-			<div class="col-4 figures">{{expense.amount | currency:"&pound;"}}</div>
-			<div class="col-2 figures">{{expense.vat | currency:"&pound;"}}</div>
-			<div class="col-15">{{expense.reason}}</div>
+			<!-- DS: The expenses objec's properties are changed to fit the microservice definitions -->
+			<div class="col-4">{{expense.expenseDate | date:'dd MMM yyyy'}}</div>
+			<div class="col-4 figures">{{expense.expenseAmount | currency:"&pound;"}}</div>
+			<div class="col-2 figures">{{expense.expenseAmountVAT | currency:"&pound;"}}</div>
+			<div class="col-15">{{expense.expenseReason}}</div>
 		</div>
 	</div>
 </div>

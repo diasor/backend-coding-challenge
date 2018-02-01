@@ -1,10 +1,17 @@
 package com.engage.codetest;
+import com.engage.codetest.security.BasicUser;
+import com.engage.codetest.security.UserAuthenticator;
+import com.engage.codetest.security.UserAuthorizer;
 import com.engage.codetest.services.ExpenseService;
 import com.engage.codetest.health.ExpensesApplicationHealthCheck;
 import com.engage.codetest.api.ExpenseResource;
 import io.dropwizard.Application;
+import io.dropwizard.auth.AuthDynamicFeature;
+import io.dropwizard.auth.AuthValueFactoryProvider;
+import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
 import io.dropwizard.setup.Environment;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
+import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 import org.skife.jdbi.v2.DBI;
 
 import javax.servlet.DispatcherType;
@@ -36,20 +43,26 @@ public class ExpensesApplication extends Application<ExpensesConfiguration>{
         ExpensesApplicationHealthCheck healthCheck =
                 new ExpensesApplicationHealthCheck();
         environment.healthChecks().register(DROPWIZARD_BLOG_SERVICE, healthCheck);
+/*
+        environment.jersey().register(new BasicAuthProvider<BasicUser>(new UserAuthenticator(),
+                "SUPER SECRET STUFF"));*/
 
-//        // Register OAuth authentication
-//        environment.jersey()
-//                .register(new AuthDynamicFeature(new OAuthCredentialAuthFilter.Builder<User>()
-//                        .setAuthenticator(new DropwizardBlogAuthenticator())
-//                        .setAuthorizer(new DropwizardBlogAuthorizer()).setPrefix(BEARER).buildAuthFilter()));
-//        environment.jersey().register(RolesAllowedDynamicFeature.class);
-//
+        // Security controls
+        environment.jersey().register(new AuthDynamicFeature(new BasicCredentialAuthFilter.Builder<BasicUser>()
+                .setAuthenticator(new UserAuthenticator())
+                .setAuthorizer(new UserAuthorizer())
+                .setRealm("BASIC-AUTH-REALM")
+                .buildAuthFilter()));
+        environment.jersey().register(RolesAllowedDynamicFeature.class);
+        environment.jersey().register(new AuthValueFactoryProvider.Binder<>(BasicUser.class));
+
+        // CORS headers are added so the frontend can caonsume the services
         enableCorsHeaders(environment);
 
         // Register resources
         environment.jersey().register(new ExpenseResource());
 
-        // set up services
+        // Set up services with the datasource
         ExpenseService.setDbi(dbi);
     }
 

@@ -2,11 +2,12 @@ package com.engage.codetest.api;
 
 import com.codahale.metrics.annotation.Timed;
 import com.engage.codetest.dao.ExpenseDaoBean;
+import com.engage.codetest.security.BasicUser;
 import com.engage.codetest.services.ExpenseService;
 import com.engage.codetest.services.ExpenseServiceBean;
 import com.engage.codetest.services.ObjectNotFoundException;
+import io.dropwizard.auth.Auth;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.lang.reflect.InvocationTargetException;
@@ -17,10 +18,9 @@ import java.util.List;
 
 @Path("/expenses")
 @Produces(MediaType.APPLICATION_JSON)
-@RolesAllowed("ADMIN") // todo check roles + auth
+// @RolesAllowed("ADMIN") // todo check roles + auth
 public class ExpenseResource {
-    public ExpenseResource() {
-    }
+    public ExpenseResource() {}
 
     /**
      * This service returns ONE Expense identified by id. If the Expense does not exist, then
@@ -28,10 +28,10 @@ public class ExpenseResource {
      * */
     @GET
     @Timed
-    public ApiResult<List<ExpenseDaoBean>> getExpenses() {
-        try{
-           //return new ApiResult<List<ExpenseDaoBean>>(ExpenseService.getMyExpenses());
-           return new ApiResult<>(ExpenseService.getMyExpenses());
+    public ApiResult<List<ExpenseDaoBean>> getExpenses(@Auth BasicUser user) {
+        try {
+            System.out.println("Access by " + user.getUserName());
+            return new ApiResult<>(ExpenseService.getMyExpenses());
         }
         catch (ObjectNotFoundException ex){
             return new ApiResult<>(ex.getDescription(), ex.getErrorCode());

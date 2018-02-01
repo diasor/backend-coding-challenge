@@ -22,4 +22,5 @@ public class ExpensesConfiguration extends Configuration {
     public void setDataSourceFactory(final DataSourceFactory dataSourceFactory) {
         this.dataSourceFactory = dataSourceFactory;
     }
+
 }

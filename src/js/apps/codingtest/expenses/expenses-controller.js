@@ -29,6 +29,7 @@ app.controller("ctrlExpenses", ["$rootScope", "$scope", "config", "restalchemy",
 		restExpenses.get().then(function(result) {
 			$scope.expenses = result.data; // DS: the variable "result" obtained from thee microservices, has a data object where the data actually is
 		});
+
 	}
 
 	$scope.saveExpense = function() {

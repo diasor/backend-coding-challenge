@@ -14,7 +14,7 @@ module.exports = {
 
 	// The root directory for all api calls
 	// apiroot: "/app",
-	apiroot: "http://localhost:9090/", // DS: The new url is added for the microservices.
+	apiroot: "https://localhost:8443/", // DS: The new url is added for the microservices.
 
 	// Root directory for static content
 	staticRoot: "/"

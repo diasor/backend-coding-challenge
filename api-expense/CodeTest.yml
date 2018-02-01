@@ -14,8 +14,21 @@ database:
  checkConnectionOnBorrow: true
 server:
   applicationConnectors:
-    - type: http
-      port: 9090
+    - type: https
+      port: 8443
+      keyStorePath: ../doc/mykeys.p12
+      keyStorePassword: engage
+      keyStoreType: PKCS12
+      supportedProtocols: [SSLv2Hello,TLSv1,TLSv1.1,TLSv1.2]
+      allowRenegotiation: true
+      validateCerts: false
+
   adminConnectors:
-    - type: http
-      port: 9091
+    - type: https
+      port: 8444
+      keyStorePath: ../doc/mykeys.p12
+      keyStorePassword: engage
+      keyStoreType: PKCS12
+      supportedProtocols: [SSLv2Hello,TLSv1,TLSv1.1,TLSv1.2]
+      allowRenegotiation: true
+      validateCerts: false

@@ -393,8 +393,10 @@ gulp.task("less", gulpsync.sync(["gitinfo", "uncompressed", "copyfrom", "html", 
 gulp.task("apps", gulpsync.sync(["gitinfo", "uncompressed", "copyfrom", "html", "iconfont", "apps-scripts", "copyto"], "sync apps"));
 
 gulp.task("server", ["dev"], function() {
-	connect.server({ root: config.target });
-
+	var server = connect.server( {
+	    root: config.target,
+	});
+	//server.use(authenticateUrls("/", function (name, password) { return true; }));
 });
 
 // Present help info

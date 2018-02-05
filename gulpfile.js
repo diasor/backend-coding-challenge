@@ -396,7 +396,6 @@ gulp.task("server", ["dev"], function() {
 	var server = connect.server( {
 	    root: config.target,
 	});
-	//server.use(authenticateUrls("/", function (name, password) { return true; }));
 });
 
 // Present help info

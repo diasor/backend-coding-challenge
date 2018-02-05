@@ -12,8 +12,16 @@
 				<input type="text" ng-required="true" ng-model="newExpense.date" ui-date="dateOptions" placeholder="dd/mm/yyyy" />
 			</li>
 			<li>
-				<label>Amount</label>
-				<input type="text" ng-required="true" ng-model="newExpense.amount" placeholder="00.00" />
+                <label>Amount</label>
+                <input type="text" ng-required="true" ng-model="newExpense.amount" ng-change="calcVAT()" placeholder="00.00" />
+			</li>
+			<li>
+				<label>Currency</label>
+				<!-- The currency is no loger required. If the value is empty, then the api will set
+				the GBP by default. -->
+				<input ng-style="smallInput" type="text" ng-model="newExpense.currency" placeholder="GBP"/>
+                <label ng-style="vatPgeStyle" on-init="getVatPge()">(VAT {{pgeVAT}}%)</label>
+                <label ng-style="vatStyle"> {{expenseVat}}  </label>
 			</li>
 			<li>
 				<label>Reason</label>
@@ -35,11 +43,12 @@
 			<div class="col-15">Reason</div>
 		</div>
 		<div ng-repeat="expense in expenses" class="body-row">
-			<!-- DS: The expenses objec's properties are changed to fit the microservice definitions -->
-			<div class="col-4">{{expense.expenseDate | date:'dd MMM yyyy'}}</div>
-			<div class="col-4 figures">{{expense.expenseAmount | currency:"&pound;"}}</div>
-			<div class="col-2 figures">{{expense.expenseAmountVAT | currency:"&pound;"}}</div>
-			<div class="col-15">{{expense.expenseReason}}</div>
+			<!-- DS: The expenses currency is added -->
+			<div class="col-4">{{expense.date | date:'dd MMM yyyy'}}</div>
+			<!-- DS: The amount and the currency will be displayed next to each other. -->
+			<div class="col-4 figures">{{expense.amount }} {{expense.currencySymbol}}</div>
+			<div class="col-2 figures">{{expense.vat}}</div>
+			<div class="col-15">{{expense.reason}}</div>
 		</div>
 	</div>
 </div>

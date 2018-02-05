@@ -13,7 +13,6 @@ module.exports = {
 	fonts: "//fast.fonts.net/jsapi/8f4aef36-1a46-44be-a573-99686bfcc33b.js",
 
 	// The root directory for all api calls
-	// apiroot: "/app",
 	apiroot: "https://localhost:8443/", // DS: The new url is added for the microservices.
 
 	// Root directory for static content

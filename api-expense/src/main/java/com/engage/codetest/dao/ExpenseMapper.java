@@ -12,18 +12,22 @@ public class ExpenseMapper implements ResultSetMapper<ExpenseDaoBean>{
     private static final String AMOUNT_VAT = "expense_amount_VAT";
     private static final String CURRENCY = "amount_currency_ISO";
     private static final String REASON = "expense_reason";
+    private static final String USER = "expense_user";
 
     public ExpenseDaoBean map(int i, ResultSet resultSet, StatementContext statementContext)
             throws SQLException {
 
+        // todo turn into log
+        /*
         System.out.println("Llega hasta MAPPER");
         System.out.println(resultSet.getInt(ID));
         System.out.println("************* DATE " + resultSet.getDate(DATE));
         System.out.println("************* AMOUNT " + resultSet.getBigDecimal(AMOUNT));
         System.out.println("************* VAT " + resultSet.getBigDecimal(AMOUNT_VAT));
-        System.out.println("************* CURRENCY " + resultSet.getShort(CURRENCY));
+        System.out.println("************* CURRENCY " + resultSet.getString(CURRENCY));
         System.out.println("************* REASON " + resultSet.getString(REASON));
+        */
         return new ExpenseDaoBean(resultSet.getInt(ID), resultSet.getDate(DATE).toLocalDate(), resultSet.getBigDecimal(AMOUNT),
-                resultSet.getBigDecimal(AMOUNT_VAT), resultSet.getShort(CURRENCY), resultSet.getString(REASON));
+                resultSet.getBigDecimal(AMOUNT_VAT), resultSet.getString(CURRENCY), resultSet.getString(REASON), resultSet.getString(USER));
         }
 }

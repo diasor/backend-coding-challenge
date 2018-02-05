@@ -13,6 +13,7 @@ public class UserAuthenticator implements Authenticator<BasicCredentials, BasicU
             BasicUser buser = new BasicUser(credentials.getUsername());
             return Optional.of(buser);
         }
+        // todo log failed auth attempt
         return Optional.empty();
     }
 

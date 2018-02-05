@@ -18,7 +18,6 @@ app.config(["$routeProvider", function($routeProvider) {
 	$routeProvider.otherwise({redirectTo: "/expenses"}   );
 }]);
 
-// original app.run(["$rootScope", function($rootScope) {
 app.run(['$http', '$rootScope', function($http, $rootScope) {
 
     // DS: The Basic Authorization header is added to the http request with a

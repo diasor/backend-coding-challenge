@@ -1,10 +1,18 @@
 package com.engage.codetest.services;
 
-public class ObjectInvalidInputException extends RuntimeException {
+/**
+ * @author Diana Sormani
+ * Created: February 03, 2018
+ * Last Updated: February 05, 2018
+ * Description: The InvalidInputException class was created to define a particular kind of exception:
+ *              indicates when a data input is invalid or incorrect somehow.
+ *              It extends the RunTimeException
+ */
+public class InvalidInputException extends RuntimeException {
     private String inputName;
     private String reason;
 
-    public ObjectInvalidInputException(String inputName, String reason) {
+    public InvalidInputException(String inputName, String reason) {
         this.inputName = inputName;
         this.reason = reason;
     }

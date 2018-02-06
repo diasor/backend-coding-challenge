@@ -13,23 +13,33 @@
 			</li>
 			<li>
                 <label>Amount</label>
+                <!-- DS: Whenever the "newExpense.amount" input is changed, then the new function
+                    calcVAT is called to recalculate the {{expenseVat}} label. -->
                 <input type="text" ng-required="true" ng-model="newExpense.amount" ng-change="calcVAT()" placeholder="00.00" />
 			</li>
 			<li>
 				<label>Currency</label>
-				<!-- The currency is no loger required. If the value is empty, then the api will set
+				<!-- DS: The currency is no longer compulsory. If the value is empty, then the api will set
 				the GBP by default. -->
-				<input ng-style="smallInput" type="text" ng-model="newExpense.currency" placeholder="GBP"/>
-                <label ng-style="vatPgeStyle" on-init="getVatPge()">(VAT {{pgeVAT}}%)</label>
-                <label ng-style="vatStyle"> {{expenseVat}}  </label>
+				<input class="currency" type="text" ng-model="newExpense.currency" placeholder="GBP"/>
+                <!-- DS: A new label is added indicating the percentage with which the VAT must be calculated.
+                    The value is obtained on-init from the backend via a rest endpoint. -->
+                <label class="vat-percentage" on-init="getVatPge()">(VAT {{pgeVAT}}%)</label>
+                <!-- DS: The VAT value is calculated based on the amount stored in  "newExpense.amount". -->
+                <label class="vat-amount"> {{expenseVat}}  </label>
 			</li>
 			<li>
 				<label>Reason</label>
-					<textarea at-auto-resize ng-required="true" ng-model="newExpense.reason" ng-trim="false" placeholder="why oh why?"></textarea>
+                <textarea at-auto-resize ng-required="true" ng-model="newExpense.reason" ng-trim="false" placeholder="why oh why?"></textarea>
 			</li>
+            <li>
+                <!-- DS: new divs for displaying error and messages.-->
+                <div data-ng-show="showErr" ng-class="{fade:doFade}" class="alert-msg alert-danger"> {{contentMessage}}</div>
+                <div data-ng-show="showMsg" ng-class="{fade:doFade}" class="alert-msg alert-success"> {{contentMessage}}</div>
+            </li>
 			<li>
 				<label></label>
-				<button ng-click="saveExpense()" class="solid">Save Expense</button> <button ng-click="clearExpense()">cancel</button>
+				<button ng-click="saveExpense()" class="solid">Save Expense</button> <button ng-click="clearExpense()">Cancel</button>
 			</li>
 		</ul>
 	</form>
@@ -43,10 +53,11 @@
 			<div class="col-15">Reason</div>
 		</div>
 		<div ng-repeat="expense in expenses" class="body-row">
-			<!-- DS: The expenses currency is added -->
 			<div class="col-4">{{expense.date | date:'dd MMM yyyy'}}</div>
-			<!-- DS: The amount and the currency will be displayed next to each other. -->
-			<div class="col-4 figures">{{expense.amount }} {{expense.currencySymbol}}</div>
+			<!-- DS: The currency symbol is added to the grid. The amount and the currency will be
+			     displayed next to each other. -->
+			<div class="col-4 figures">{{expense.amount}} {{expense.currencySymbol}}</div>
+            <!-- DS: The VAT amoount is added to the grid. -->
 			<div class="col-2 figures">{{expense.vat}}</div>
 			<div class="col-15">{{expense.reason}}</div>
 		</div>

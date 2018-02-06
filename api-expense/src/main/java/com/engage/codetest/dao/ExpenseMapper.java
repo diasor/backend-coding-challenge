@@ -5,6 +5,15 @@ import java.sql.SQLException;
 import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.tweak.ResultSetMapper;
 
+/**
+ * @author Diana Sormani
+ * Created: January 28, 2018
+ * Last Updated: February 05, 2018
+ * Description: The ExpenseMapper class implements the mapping between the ExpenseDaoBean class,
+ *              which contains all the data for a given Expense, and the ResultSet from
+ *              the dadtabase.
+ *              // todo verificar desc
+ */
 public class ExpenseMapper implements ResultSetMapper<ExpenseDaoBean>{
     private static final String ID = "id";
     private static final String DATE = "expense_date";

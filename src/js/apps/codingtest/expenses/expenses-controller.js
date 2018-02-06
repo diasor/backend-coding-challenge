@@ -8,7 +8,8 @@ Expenses controller
 
 var app = angular.module("expenses.controller", []);
 
-app.controller("ctrlExpenses", ["$rootScope", "$scope", "config", "restalchemy", function ExpensesCtrl($rootScope, $scope, $config, $restalchemy) {
+app.controller("ctrlExpenses", ["$rootScope", "$scope", "config", "restalchemy", '$timeout',
+    function ExpensesCtrl($rootScope, $scope, $config, $restalchemy, $timeout) {
 	// Update the headings
 	$rootScope.mainTitle = "Expenses";
 	$rootScope.mainHeading = "Expenses";
@@ -16,6 +17,22 @@ app.controller("ctrlExpenses", ["$rootScope", "$scope", "config", "restalchemy",
 	// Update the tab sections
 	$rootScope.selectTabSection("expenses", 0);
 
+	// DS: Error handling
+    $scope.showMsg = false;
+    $scope.showErr = false;
+    $scope.doFade = false;
+    $scope.contentMessage = " ";
+
+    $scope.displayMsg = function(){
+        $scope.doFade = false;
+        $timeout(function(){
+          $scope.doFade = true;
+          $scope.showErr = false;
+          $scope.showMsg = false;
+        }, 2500);
+      };
+
+    // DS: rest endpoints
     var restVatPge = $restalchemy.init({ root: $config.apiroot }).at("vat");
 	var restExpenses = $restalchemy.init({ root: $config.apiroot }).at("expenses");
 
@@ -28,14 +45,36 @@ app.controller("ctrlExpenses", ["$rootScope", "$scope", "config", "restalchemy",
 	var loadExpenses = function() {
 		// Retrieve a list of expenses via REST
 		restExpenses.get().then(function(result) {
-			$scope.expenses = result.data; // DS: the variable "result" obtained from thee microservices, has a data object where the data actually is
+		    if (result.isOk){
+		        // DS: If the rest endpoint isOK, then no error is displayed
+			    $scope.expenses = result.data; // DS: the variable "result" obtained from the rest endpoint
+			                                   // has a "data" object where the data actually is.
+		    }
+		    else{
+		        // DS: There was an error with the rest request GETTING the expense list for the user
+		        $scope.contentMessage = "ERROR: " + result.error;
+		        $scope.displayMsg();
+			    }
 		});
 	}
 
 	$scope.saveExpense = function() {
 		if ($scope.expensesform.$valid) {
 			// Post the expense via REST
-			restExpenses.post($scope.newExpense).then(function() {
+			restExpenses.post($scope.newExpense).then(function(result) {
+			    if (result.isOk){
+            	    $scope.contentMessage = "The Expense was successfully created.";
+            	    $scope.showMsg = true;
+            	    $scope.showErr = false;
+            		$scope.displayMsg();
+            	}
+            	else{
+            	    // DS: There was an error with the rest request CREATING a new expense
+            		$scope.contentMessage = "ERROR: " + result.error;
+            	    $scope.showMsg = false;
+            	    $scope.showErr = true;
+            		$scope.displayMsg();
+            	}
 				// Reload new expenses list
 				loadExpenses();
 			});
@@ -44,12 +83,16 @@ app.controller("ctrlExpenses", ["$rootScope", "$scope", "config", "restalchemy",
 
 	$scope.clearExpense = function() {
 		$scope.newExpense = {};
+		$scope.contentMessage = " "; // DS : the error message is clear
+		$scope.showMsg = false;
+		$scope.showErr = false;
+
 	};
 
 	$scope.getVATPge = function() {
-		// DS : Get the VAT percentage via REST
+		// DS : Get the VAT percentage via rest endpoint
 		restVatPge.get().then(function(result) {
-			$scope.pgeVAT = result; // DS: the variable "result" obtained from thee microservices, has a data object where the data actually is
+			$scope.pgeVAT = result;
 		});
 	};
 
@@ -57,14 +100,10 @@ app.controller("ctrlExpenses", ["$rootScope", "$scope", "config", "restalchemy",
 		 $scope.expenseVat = $scope.newExpense.amount * $scope.pgeVAT/100;
 	};
 
-	$scope.smallInput = {"width" : "80px"};
-    $scope.vatStyle = {"width" : "60px"};
-    $scope.vatPgeStyle = {"width" : "80px"};
-
     // Initialise scope variables
     $scope.init = function(){
-        // DS: This function is used to calculate the VAT percentaje
-        // Obtained via rest from the backend
+        // DS: This function is used to calculate the VAT percentage
+        // which is obtained via rest from the backend
         $scope.getVATPge();
     }
     $scope.init();

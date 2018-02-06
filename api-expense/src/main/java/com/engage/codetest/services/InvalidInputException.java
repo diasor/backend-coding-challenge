@@ -9,8 +9,9 @@ package com.engage.codetest.services;
  *              It extends the RunTimeException
  */
 public class InvalidInputException extends RuntimeException {
-    private String inputName;
-    private String reason;
+    private final String inputCode = "INVALID_INPUT";
+    private String inputName;       // Name of the input which has failed validation (ex: expenseDate, expenseAmount, etc)
+    private String reason;          // Reason for failing validation: null value, not a date, etc.
 
     public InvalidInputException(String inputName, String reason) {
         this.inputName = inputName;
@@ -18,18 +19,11 @@ public class InvalidInputException extends RuntimeException {
     }
 
     public String getDescription() {
-        return "Invalid Input";
+        return "Input: " + this.inputName + ": " + this.reason;
     }
 
     public String getErrorCode() {
-        return "INV_INPUT";
+        return this.inputCode;
     }
 
-    public String getInputName() {
-        return inputName;
-    }
-
-    public void setInputName(String inputName) {
-        this.inputName = inputName;
-    }
 }

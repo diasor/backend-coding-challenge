@@ -49,4 +49,18 @@ public class ExpenseJSON {
     public String getReason() {
         return reason;
     }
+
+    public BigDecimal getVat() {
+        // DO NOT remove :: used from frontend
+        return vat;
+    }
+
+    public String getCurrencySymbol() {
+        // DO NOT remove :: used from frontend
+        return currencySymbol;
+    }
+
+    public String getUser() {
+        return user;
+    }
 }

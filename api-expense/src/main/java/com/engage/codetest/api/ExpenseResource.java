@@ -1,15 +1,22 @@
 package com.engage.codetest.api;
 
 import com.codahale.metrics.annotation.Timed;
+import com.engage.codetest.ExpensesApplication;
 import com.engage.codetest.dao.ExpenseDaoBean;
 import com.engage.codetest.security.BasicUser;
 import com.engage.codetest.services.ExpenseService;
+import com.engage.codetest.services.InvalidInputException;
 import com.engage.codetest.services.ObjectNotFoundException;
+import com.engage.codetest.services.SetupException;
 import io.dropwizard.auth.Auth;
+import org.skife.jdbi.v2.exceptions.UnableToObtainConnectionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.lang.reflect.InvocationTargetException;
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -32,6 +39,7 @@ import java.util.stream.Collectors;
 public class ExpenseResource {
 
     public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    public static final String INVALID_DATE = "INVALID_DATE";
 
     public ExpenseResource() {}
 
@@ -49,6 +57,7 @@ public class ExpenseResource {
     @GET
     @Timed
     public ApiResult<List<ExpenseJSON>> getUserExpenses(@Auth BasicUser user) {
+
         try {
             List<ExpenseDaoBean> expenses = ExpenseService.getUserExpenses(user.getUserName());
             List<ExpenseJSON> outExpenses = expenses.stream()
@@ -57,6 +66,13 @@ public class ExpenseResource {
             return new ApiResult<>(outExpenses);
         }
         catch (ObjectNotFoundException ex){
+            String exceptionString = ex.getErrorCode() + " " +  ex.getDescription();
+            ExpensesApplication.expenseLogger.error(exceptionString);
+            return new ApiResult<>(ex.getDescription(), ex.getErrorCode());
+        }
+        catch (SetupException ex){
+            String exceptionString = ex.getErrorCode() + " " +  ex.getDescription();
+            ExpensesApplication.expenseLogger.error(exceptionString);
             return new ApiResult<>(ex.getDescription(), ex.getErrorCode());
         }
     }
@@ -74,6 +90,8 @@ public class ExpenseResource {
         try {
             return new ApiResult<>(ExpenseService.getExpenseById(id));
         } catch (ObjectNotFoundException ex) {
+            String exceptionString = ex.getErrorCode() + " " +  ex.getDescription();
+            ExpensesApplication.expenseLogger.warn(exceptionString);
             return new ApiResult<>(ex.getDescription(), ex.getErrorCode());
         }
     }
@@ -106,12 +124,30 @@ public class ExpenseResource {
          *      reason: This is the reason for the expense
          *  }
         */
-        LocalDate expenseDate = LocalDate.parse(expenseJSON.getDate(), DATE_FORMATTER);
-        ExpenseDaoBean exp = new ExpenseDaoBean(expenseDate, expenseJSON.getAmount(), expenseJSON.getCurrency(), expenseJSON.getReason(), user.getUserName());
         try {
-            return new ApiResult<>(ExpenseService.createExpense(exp));
+            // A Local Date is created based on the predefined DATE_FORMATTER
+            LocalDate expenseDate = LocalDate.parse(expenseJSON.getDate(), DATE_FORMATTER);
+            // If there was no error on the date, then the ExpsenseService class is used to create a new Expense.
+            // The result is returned in an ApiResult object
+            return new ApiResult<>(ExpenseService.createExpense(expenseDate, expenseJSON.getAmount(), expenseJSON.getCurrency(), expenseJSON.getReason(), user.getUserName()));
         } catch (ObjectNotFoundException ex) {
-            return new ApiResult<>(ex.getDescription(), ex.getErrorCode());
+                String exceptionString = ex.getErrorCode() + " " +  ex.getDescription();
+                ExpensesApplication.expenseLogger.error(exceptionString);
+                return new ApiResult<>(ex.getDescription(), ex.getErrorCode());
+        }  catch (InvalidInputException ex) {
+                String exceptionString = ex.getErrorCode() + " " +  ex.getDescription();
+                ExpensesApplication.expenseLogger.error(exceptionString);
+                return new ApiResult<>(ex.getDescription(), ex.getErrorCode());
+        } catch (DateTimeException ex){
+            // Exception created with the date
+            String exceptionString = INVALID_DATE + " " + ex.getLocalizedMessage();
+            ExpensesApplication.expenseLogger.error(exceptionString);
+            return new ApiResult<>(ex.getLocalizedMessage(), INVALID_DATE);
+        }catch (IllegalArgumentException ex){
+            // Exception created with the date
+            String exceptionString = INVALID_DATE + " " + ex.getLocalizedMessage();
+            ExpensesApplication.expenseLogger.error(exceptionString);
+            return new ApiResult<>(ex.getLocalizedMessage(), INVALID_DATE);
         }
     }
 }

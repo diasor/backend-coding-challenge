@@ -43,3 +43,13 @@ jerseyClient:
   #The size of the work queue of the pool used for asynchronous requests.
   #Additional threads will be spawn only if the queue is reached its maximum size.
   workQueueSize: 16
+
+logging:
+  level: INFO
+  loggers:
+    "com.engage.expense":
+      additive: false
+      appenders:
+        - type: console
+  appenders:
+    - type: console

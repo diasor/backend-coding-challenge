@@ -19,6 +19,8 @@ import io.dropwizard.setup.Environment;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 import org.skife.jdbi.v2.DBI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
@@ -32,15 +34,16 @@ import java.util.EnumSet;
  * Last Updated: February 05, 2018
  * Description: The ExpensesApplication class is the main class to set up the environment,
  *              secrurity, resources and configuration in general for the rest endpoints provided in this system.
+ *              This class also defines a logger to leave an execution trace at the console.
  */
 public class ExpensesApplication extends Application<ExpensesConfiguration>{
     private static final String SQL = "sql";
     private static final String EXPENSES_SERVICE = "Expenses service";
     private static final String BEARER = "Bearer";
+    public static Logger expenseLogger = LoggerFactory.getLogger("com.engage.expense");
 
     public static void main(String[] args) throws Exception {
-
-        // todo log properly
+        expenseLogger.info("The Expense application has started.");
         new ExpensesApplication().run("server", "CodeTest.yml");
     }
 

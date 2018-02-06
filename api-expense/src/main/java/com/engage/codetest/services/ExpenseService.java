@@ -1,13 +1,16 @@
 package com.engage.codetest.services;
 
+import com.engage.codetest.ExpensesApplication;
 import com.engage.codetest.dao.ExpenseDaoBean;
 import com.engage.codetest.dao.ExpenseDAO;
 import org.skife.jdbi.v2.DBI;
 import org.skife.jdbi.v2.Handle;
+import org.skife.jdbi.v2.exceptions.UnableToObtainConnectionException;
 import org.skife.jdbi.v2.sqlobject.Transaction;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -47,6 +50,10 @@ public final class ExpenseService {
             ExpenseDAO dao = handle.attach(ExpenseDAO.class);
             return dao.getMyExpenses(user);
         }
+        catch (UnableToObtainConnectionException ex){
+            String exceptionDsc = DATABASE_UNEXPECTED_ERROR + ex.getCause().getLocalizedMessage();
+            throw new SetupException("DATABASE", exceptionDsc);
+        }
     }
 
     /**
@@ -72,37 +79,43 @@ public final class ExpenseService {
      *      - and the reason
      */
     @Transaction
-    public static ExpenseDaoBean createExpense(ExpenseDaoBean expDao) throws InvocationTargetException, IllegalAccessException {
+    //public static ExpenseDaoBean createExpense(ExpenseDaoBean expDao) throws InvocationTargetException, IllegalAccessException {
+    public static ExpenseDaoBean createExpense(LocalDate expenseDate, BigDecimal expenseAmount, String currencyCode, String expenseReason, String user)
+            throws InvocationTargetException, IllegalAccessException {
         try (Handle handle = dbi.open()) {
-            if (expDao.getExpenseDate() == null){
+            String newCurrCode = currencyCode;
+            if (expenseDate == null){
                 // An Expense can not be created with a null date
                 throw new InvalidInputException("date", EMPTY_DATE);
             }
-            if (expDao.getExpenseAmount().equals(BigDecimal.ZERO)){
+            if (expenseAmount.equals(BigDecimal.ZERO)){
                 // An Expense can not be created with an Amount with value ZERO
                 throw new InvalidInputException("amount", EMPTY_AMOUNT);
             }
-            if (expDao.getExpenseReason().isEmpty()){
+            if ((expenseReason == null) || expenseReason.isEmpty()) {
                 // An Expense can not be created with an empty Reason
                 throw new InvalidInputException("reason", EMPTY_REASON);
             }
 
-            if ((!expDao.getCurrencyCode().equals("GBP")) && (!expDao.getCurrencyCode().equals("EUR"))) {
-                // An Expense has only 3 valid values for the currency: GBP, EUR or empty.
-                throw new InvalidInputException("currency", INVALID_CURRENCY);
+            if ((newCurrCode == null) || newCurrCode.isEmpty()) {
+                newCurrCode = "GBP";
             }
-            // If the currency is not GBP (United Kingdom pounds), then the amount and vat must
-            // be converted and stored again in the expDao object.
-            if (!expDao.getCurrencyCode().equals("GBP")) {
-                expDao.currencyCalculations();
+            else {
+                if ((!newCurrCode.equals("GBP")) && (!newCurrCode.equals("EUR"))) {
+                    // An Expense has only 3 valid values for the currency: GBP, EUR or empty.
+                    throw new InvalidInputException("currency", INVALID_CURRENCY);
+                }
             }
+            // Once the input fields has been checked, the ExpenseDaoBean object is created
+            ExpenseDaoBean expDao = new ExpenseDaoBean(expenseDate, expenseAmount, newCurrCode, expenseReason, user);
 
             ExpenseDAO dao = handle.attach(ExpenseDAO.class);
             // The record in the "expense" table is created
             int generatedId = dao.createExpense(expDao);
             // Once the record is generated, then ID is obtained and set to the ExpenseDao object
-            // todo log generated id
             expDao.setId(generatedId);
+            // The information has been logged
+            ExpensesApplication.expenseLogger.info("A new Expense has been created with ID: " + generatedId);
             return expDao;
         }
     }
@@ -111,7 +124,7 @@ public final class ExpenseService {
      * This method performs health checks for the application. Particularly it checks:
      *      * If the connection to the database is on.
      *      * If the table expenses exists with the necessary columns.
-     *      * If the convertion rest service is available.
+     *      * If the conversion rest service is available.
      * @return a string containing the errors found, or null otherwise
      */
     public static String performHealthCheck() {
@@ -119,13 +132,17 @@ public final class ExpenseService {
             ExpenseDAO dao = handle.attach(ExpenseDAO.class);
             dao.getOneExpenseCheck();
         } catch (Exception ex) {
-            return DATABASE_UNEXPECTED_ERROR + ex.getCause().getLocalizedMessage();
+            String exceptionString = DATABASE_UNEXPECTED_ERROR + ex.getCause().getLocalizedMessage();
+            ExpensesApplication.expenseLogger.error(exceptionString);
+            return exceptionString;
         }
 
         try {
             CurrencyService.convertCheck();
-        }catch (SetUpException ex) {
-            return ex.getDescription();
+        }catch (SetupException ex) {
+            String exceptionString = ex.getErrorCode() + " " +  ex.getDescription();
+            ExpensesApplication.expenseLogger.error(exceptionString);
+            return exceptionString;
         }
         return null;
     }

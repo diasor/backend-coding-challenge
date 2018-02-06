@@ -70,7 +70,7 @@ app.controller("ctrlExpenses", ["$rootScope", "$scope", "config", "restalchemy",
             	}
             	else{
             	    // DS: There was an error with the rest request CREATING a new expense
-            		$scope.contentMessage = "ERROR: " + result.error;
+            		$scope.contentMessage = result.error.errorCode + " -> " + result.error.errorDescription;
             	    $scope.showMsg = false;
             	    $scope.showErr = true;
             		$scope.displayMsg();

@@ -69,7 +69,7 @@ public final class CurrencyService {
                     .get(CurrencyData.class);
         }
         catch (Exception ex){
-            throw new SetUpException("CONVERT", CONVERT_SERVICE_FAILURE  + ":" + ex.getMessage());
+            throw new SetupException("CONVERT", CONVERT_SERVICE_FAILURE  + ":" + ex.getMessage());
         }
     }
 }

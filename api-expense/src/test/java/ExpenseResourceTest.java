@@ -301,22 +301,22 @@ public class ExpenseResourceTest {
         {
             expLocalDate = LocalDate.of(2016, 01, 20);
         }
-        return new ExpenseDaoBean(78, expLocalDate, BigDecimal.valueOf(1000).stripTrailingZeros(), BigDecimal.valueOf(200).stripTrailingZeros(), currency, "Expense created for testing purposes", user);
+        return new ExpenseDaoBean(78, expLocalDate, BigDecimal.valueOf(1000), BigDecimal.valueOf(200).setScale(2), currency, "Expense created for testing purposes", user);
     }
 
     private ExpenseJSON createTestExpense(){
         // This method creates an expense with valid information
-        return new ExpenseJSON(78, "20/01/2016", BigDecimal.valueOf(1000).stripTrailingZeros().toString(), BigDecimal.valueOf(200).stripTrailingZeros(), currency, "£", "Expense created for testing purposes", user);
+        return new ExpenseJSON(78, "20/01/2016", "1000.00", BigDecimal.valueOf(200).setScale(2), currency, "£", "Expense created for testing purposes", user);
     }
 
     private ExpenseJSON createTestExpenseNegAmount(){
         // This method creates an expense with a negative amount
-        return new ExpenseJSON(0, "20/01/2026", BigDecimal.valueOf(-1000).stripTrailingZeros().toString(), BigDecimal.valueOf(200).stripTrailingZeros(), currency, "£", "Expense with negative amount", user);
+        return new ExpenseJSON(0, "20/01/2026", "-1000.00", BigDecimal.valueOf(200).setScale(2), currency, "£", "Expense with negative amount", user);
     }
 
     private ExpenseJSON createTestExpenseZeroAmount(){
         // This method creates an expense with amount = 0
-        return new ExpenseJSON(0, "20/01/2026", BigDecimal.ZERO.stripTrailingZeros().toString(), BigDecimal.valueOf(200).stripTrailingZeros(), currency, "£", "Expense with ZERO amount", user);
+        return new ExpenseJSON(0, "20/01/2026", "0", BigDecimal.valueOf(200), currency, "£", "Expense with ZERO amount", user);
     }
 
     private String createTestExpenseCharAmount(){
@@ -347,11 +347,11 @@ public class ExpenseResourceTest {
         {
             expLocalDate = LocalDate.of(2016, 01, 20);
         }
-        ExpenseDaoBean expDaoElem = new ExpenseDaoBean(80, expLocalDate, BigDecimal.valueOf(1000).stripTrailingZeros(), BigDecimal.valueOf(200).stripTrailingZeros(), currency, "First expense of the year", user);
+        ExpenseDaoBean expDaoElem = new ExpenseDaoBean(80, expLocalDate, BigDecimal.valueOf(1000), BigDecimal.valueOf(200), currency, "First expense of the year", user);
         expenseDaoList.add(expDaoElem);
-        expDaoElem = new ExpenseDaoBean(81, expLocalDate, BigDecimal.valueOf(2000).stripTrailingZeros(), BigDecimal.valueOf(400).stripTrailingZeros(), currency, "Second expense of the year", user);
+        expDaoElem = new ExpenseDaoBean(81, expLocalDate, BigDecimal.valueOf(2000), BigDecimal.valueOf(400), currency, "Second expense of the year", user);
         expenseDaoList.add(expDaoElem);
-        expDaoElem = new ExpenseDaoBean(82, expLocalDate, BigDecimal.valueOf(3000).stripTrailingZeros(), BigDecimal.valueOf(600).stripTrailingZeros(), currency, "Third expense of the year", user);
+        expDaoElem = new ExpenseDaoBean(82, expLocalDate, BigDecimal.valueOf(3000), BigDecimal.valueOf(600), currency, "Third expense of the year", user);
         expenseDaoList.add(expDaoElem);
 
         return expenseDaoList;

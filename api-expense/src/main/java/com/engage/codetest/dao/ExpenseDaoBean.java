@@ -2,7 +2,11 @@ package com.engage.codetest.dao;
 
 import com.engage.codetest.api.GeneralSettings;
 import com.engage.codetest.services.CurrencyService;
+import com.engage.codetest.services.MoneyUtil;
+
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Currency;
@@ -28,12 +32,13 @@ public class ExpenseDaoBean {
     public ExpenseDaoBean(int id, LocalDate expenseDate, BigDecimal expenseAmount, BigDecimal expenseAmountVAT, String currencyCode, String expenseReason, String expenseUser) {
         this.id = id;
         this.expenseDate = expenseDate;
-        this.expenseAmount = expenseAmount.stripTrailingZeros();
-        this.expenseAmountVAT = expenseAmountVAT.stripTrailingZeros();
         this.currencyCode = currencyCode;
         this.currency = Currency.getInstance(this.currencyCode);
         this.expenseReason = expenseReason;
         this.expenseUser = expenseUser;
+
+        this.expenseAmount = MoneyUtil.roundAmountToCurrency(expenseAmount, this.currency);
+        this.expenseAmountVAT = MoneyUtil.roundAmountToCurrency(expenseAmountVAT, this.currency);
 
         // This constructor DOES NOT calculate vat amounts or currency rates because is only called when obtaining
         // expenses from the database (that is why the Expense already has an ID)
@@ -41,13 +46,12 @@ public class ExpenseDaoBean {
 
     public ExpenseDaoBean(LocalDate expenseDate, BigDecimal expenseAmount, BigDecimal expenseAmountVAT, String currencyCode, String expenseReason, String user) {
         this.expenseDate = expenseDate;
-        this.expenseAmount = expenseAmount.stripTrailingZeros();
-        this.expenseAmountVAT = expenseAmountVAT.stripTrailingZeros();
         this.currencyCode = currencyCode;
         this.currency = Currency.getInstance(this.currencyCode);
         this.expenseReason = expenseReason;
         this.expenseUser = user;
-
+        this.expenseAmount = MoneyUtil.roundAmountToCurrency(expenseAmount, this.currency);
+        this.expenseAmountVAT = MoneyUtil.roundAmountToCurrency(expenseAmountVAT, this.currency);
     }
 
     public ExpenseDaoBean(){

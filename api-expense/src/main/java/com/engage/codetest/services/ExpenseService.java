@@ -140,10 +140,10 @@ public final class ExpenseService {
         return new ExpenseDaoBean(expenseDate, expenseAmount, expenseAmountVAT, DEFAULT_CURRENCY, expenseReason, user);
     }
 
-    private static BigDecimal calcVAT(BigDecimal expenseAmount) {
+    public static BigDecimal calcVAT(BigDecimal expenseAmount) {
         // VAT calculations
         BigDecimal vat = GeneralSettings.getVAT().divide(BigDecimal.valueOf(100));
-        return expenseAmount.multiply(vat).stripTrailingZeros();
+        return expenseAmount.multiply(vat);
     }
 
     /**

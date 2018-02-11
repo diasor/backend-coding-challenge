@@ -1,9 +1,11 @@
 import com.engage.codetest.api.GeneralSettings;
+import com.engage.codetest.services.ExpenseService;
 import org.junit.Test;
 
 import java.math.BigDecimal;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Diana Sormani
@@ -35,28 +37,35 @@ public class ExpenseTestVat {
     }
 
     /**
-     * Test 3) This method tests the vat amount calculation with positive, negative and zero amount
+     * Test 3) This method tests the vat amount calculation with positive amount
      */
     @Test
-    public void testCalculatVat() {
-        BigDecimal expectedPge = BigDecimal.valueOf(0.20);
-
-        // Positive amount
+    public void testCalculateVatPositive() {
         BigDecimal amount = BigDecimal.valueOf(1000);
-        BigDecimal calculatedAmount = expectedPge.multiply(amount);
-        BigDecimal expectedCalc = BigDecimal.valueOf(200.0);
-        assertEquals("The test failed with a Positive amount", calculatedAmount.stripTrailingZeros(), expectedCalc.stripTrailingZeros());
+        BigDecimal calculatedAmount = ExpenseService.calcVAT(amount);
+        BigDecimal expectedCalc = BigDecimal.valueOf(200);
+        assertEquals("The test failed with a Positive amount", calculatedAmount.compareTo(expectedCalc), 0);
+    }
 
-        // Amount = ZERO
-        amount = BigDecimal.ZERO;
-        calculatedAmount = expectedPge.multiply(amount);
-        expectedCalc = BigDecimal.ZERO;
-        assertEquals("The test failed with amount = Zero", calculatedAmount.stripTrailingZeros(), expectedCalc.stripTrailingZeros());
+    /**
+     * Test 4) This method tests the vat amount calculation with zero amount
+     */
+    @Test
+    public void testCalculateVatZero() {
+        BigDecimal amount = BigDecimal.ZERO;
+        BigDecimal calculatedAmount = ExpenseService.calcVAT(amount);
+        BigDecimal expectedCalc = BigDecimal.ZERO;
+        assertEquals("The test failed with amount = Zero", calculatedAmount.compareTo(expectedCalc), 0);
+    }
 
-        // Negative amount
-        amount = BigDecimal.valueOf(-1000);
-        calculatedAmount = expectedPge.multiply(amount);
-        expectedCalc = BigDecimal.valueOf(-200.0);
-        assertEquals("The test failed with a Negative amount", calculatedAmount.stripTrailingZeros(), expectedCalc.stripTrailingZeros());
+    /**
+     * Test 5) This method tests the vat amount calculation with negative amount
+     */
+    @Test
+    public void testCalculateVatNegative() {
+        BigDecimal amount = BigDecimal.valueOf(-1000);
+        BigDecimal calculatedAmount = ExpenseService.calcVAT(amount);
+        BigDecimal expectedCalc = BigDecimal.valueOf(-200.0);
+        assertEquals("The test failed with a Negative amount", calculatedAmount.compareTo(expectedCalc), 0);
     }
 }

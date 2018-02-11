@@ -20,7 +20,6 @@ public class ExpenseJSON {
     private String reason;          // Reason for the expense
     private String user;            // User
 
-
     public ExpenseJSON() {
         // Do not remove
     }

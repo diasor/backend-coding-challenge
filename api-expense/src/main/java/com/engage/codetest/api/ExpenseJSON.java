@@ -1,5 +1,7 @@
 package com.engage.codetest.api;
 
+import scala.util.parsing.combinator.testing.Str;
+
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -14,7 +16,7 @@ import java.util.*;
 public class ExpenseJSON {
     private int id;                 // This id is only created with the purpose of returning the id assigned when creating a new expense
     private String date;            // Date and time of the invoice date
-    private BigDecimal amount;      // The amount of the expense
+    private String amount;          // The amount of the expense
     private BigDecimal vat;         // The vat amount
     private String currency;        // currency code
     private String currencySymbol;  // currency symbol
@@ -38,7 +40,7 @@ public class ExpenseJSON {
         this.user = user;
     }
 */
-    public ExpenseJSON(int id, String date, BigDecimal amount, BigDecimal vat, String currency, String currencySymbol, String reason, String user) {
+    public ExpenseJSON(int id, String date, String amount, BigDecimal vat, String currency, String currencySymbol, String reason, String user) {
         this.id = id;
         this.date = date;
         this.amount = amount;
@@ -53,7 +55,7 @@ public class ExpenseJSON {
         return date;
     }
 
-    public BigDecimal getAmount() {
+    public String getAmount() {
         return amount;
     }
 

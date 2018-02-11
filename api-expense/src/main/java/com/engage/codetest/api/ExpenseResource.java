@@ -14,6 +14,7 @@ import io.swagger.annotations.*;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
 /**
  * @author Diana Sormani
  * Created: January 28, 2018
- * Last Updated: February 05, 2018
+ * Last Updated: February 11, 2018
  * Description: The ExpenseResource class implements a rest endpoint that provides three services:
  *      1) getUserExpenses: provides a list of the logged user's expenses.
  *      2) getExpenseById: provides the information of a given expense, identified by id.
@@ -40,6 +41,7 @@ public class ExpenseResource {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final String INVALID_DATE = "INVALID_DATE";
+    private static final String INVALID_AMOUNT = "INVALID_AMOUNT";
 
     public ExpenseResource() {
     }
@@ -76,7 +78,7 @@ public class ExpenseResource {
             String logUser = user.getUserName();
             List<ExpenseDaoBean> expenses = ExpenseService.getUserExpenses(logUser);
             List<ExpenseJSON> outExpenses = expenses.stream()
-                    .map(e -> new ExpenseJSON(e.getId(), e.getExpenseDateString(DATE_FORMATTER), e.getExpenseAmount(), e.getExpenseAmountVAT(), e.getCurrencyCode(), e.getCurrency().getSymbol(), e.getExpenseReason(), e.getExpenseUser()))
+                    .map(e -> new ExpenseJSON(e.getId(), e.getExpenseDateString(DATE_FORMATTER), e.getExpenseAmount().toString(), e.getExpenseAmountVAT(), e.getCurrencyCode(), e.getCurrency().getSymbol(), e.getExpenseReason(), e.getExpenseUser()))
                     .collect(Collectors.toList());
             return new ApiResult<>(outExpenses);
         } catch (ObjectNotFoundException ex) {
@@ -113,7 +115,7 @@ public class ExpenseResource {
     public ApiResult<ExpenseJSON> getExpenseById(@ApiParam(value = "Expense id", required = true) @PathParam("id") final int id) {
         try {
             ExpenseDaoBean expDao = ExpenseService.getExpenseById(id);
-            ExpenseJSON expense = new ExpenseJSON(expDao.getId(), expDao.getExpenseDateString(DATE_FORMATTER), expDao.getExpenseAmount(), expDao.getExpenseAmountVAT(), expDao.getCurrencyCode(), expDao.getCurrency().getSymbol(), expDao.getExpenseReason(), expDao.getExpenseUser());
+            ExpenseJSON expense = new ExpenseJSON(expDao.getId(), expDao.getExpenseDateString(DATE_FORMATTER), expDao.getExpenseAmount().toString(), expDao.getExpenseAmountVAT(), expDao.getCurrencyCode(), expDao.getCurrency().getSymbol(), expDao.getExpenseReason(), expDao.getExpenseUser());
             return new ApiResult<>(expense);
         } catch (ObjectNotFoundException ex) {
             String exceptionString = ex.getErrorCode() + " " + ex.getDescription();
@@ -156,12 +158,17 @@ public class ExpenseResource {
             new ApiResult<>("The loggin user can not be null.", "USER_NULL");
         }
         try {
-            // A Local Date is created based on the predefin DATE_FORMATTER
+            // A Local Date is created based on the predefined DATE_FORMATTER
             LocalDate expenseDate = LocalDate.parse(expenseJSON.getDate(), DATE_FORMATTER);
-            // If there was no error on the date, then the ExpsenseService class is used to create a new Expense.
+            // If there was no error on the date, then the ExpenseService class is used to create a new Expense.
             // The result is returned in an ApiResult object
-            ExpenseDaoBean expDao = ExpenseService.createExpense(expenseDate, expenseJSON.getAmount(), expenseJSON.getCurrency(), expenseJSON.getReason(), user.getUserName());
-            ExpenseJSON expense = new ExpenseJSON(expDao.getId(), expDao.getExpenseDateString(DATE_FORMATTER), expDao.getExpenseAmount(), expDao.getExpenseAmountVAT(), expDao.getCurrencyCode(), expDao.getCurrency().getSymbol(), expDao.getExpenseReason(), expDao.getExpenseUser());
+            BigDecimal amount = new BigDecimal(expenseJSON.getAmount());
+            if (amount.compareTo(BigDecimal.ZERO) <= 0){
+                // Only positive expenses are allowed
+                return new ApiResult<>("Only positive expenses are allowed.", "INVALID_AMOUNT");
+            }
+            ExpenseDaoBean expDao = ExpenseService.createExpense(expenseDate, amount, expenseJSON.getCurrency(), expenseJSON.getReason(), user.getUserName());
+            ExpenseJSON expense = new ExpenseJSON(expDao.getId(), expDao.getExpenseDateString(DATE_FORMATTER), expDao.getExpenseAmount().toString(), expDao.getExpenseAmountVAT(), expDao.getCurrencyCode(), expDao.getCurrency().getSymbol(), expDao.getExpenseReason(), expDao.getExpenseUser());
             return new ApiResult<>(expense);
         } catch (ObjectNotFoundException ex) {
             String exceptionString = ex.getErrorCode() + " " + ex.getDescription();
@@ -171,11 +178,25 @@ public class ExpenseResource {
             String exceptionString = ex.getErrorCode() + " " + ex.getDescription();
             ExpensesApplication.expenseLogger.error(exceptionString);
             return new ApiResult<>(ex.getDescription(), ex.getErrorCode());
-        } catch (DateTimeException | IllegalArgumentException ex) {
+        } catch (DateTimeException ex) {
             // Exception created with the date
             String exceptionString = INVALID_DATE + " " + ex.getLocalizedMessage();
             ExpensesApplication.expenseLogger.error(exceptionString);
             return new ApiResult<>(ex.getLocalizedMessage(), INVALID_DATE);
+        } catch (IllegalArgumentException ex) {
+            String exCode = "";
+            // Exception created with the date or an invalid amount
+            if (ex.getLocalizedMessage().contains("digit number")){
+                exCode = INVALID_AMOUNT;
+                String exceptionString = INVALID_AMOUNT + " " + ex.getLocalizedMessage();
+                ExpensesApplication.expenseLogger.error(exceptionString);
+            }
+            else {
+                exCode = INVALID_DATE;
+                String exceptionString = INVALID_DATE + " " + ex.getLocalizedMessage();
+                ExpensesApplication.expenseLogger.error(exceptionString);
+            }
+            return new ApiResult<>(ex.getLocalizedMessage(), exCode);
         }
     }
 }

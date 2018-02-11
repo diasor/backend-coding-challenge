@@ -1,3 +1,12 @@
 node_modules
 build
 static
+api-expense/.idea
+.idea
+api-expense/target
+package-lock.json
+partials.js
+
+# Compiled source #
+###################
+*.class

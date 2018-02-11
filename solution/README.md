@@ -1,7 +1,10 @@
 README
 ====
-How to run the your solution...
 
-IMPORTANT
-====
-To avoid unconcious bias, we aim to have your submission reviewed anonymously by one of our engineering team. Please try and avoid adding personal details to this document such as your name, or using pronouns that might indicate your gender.
+All the required documentation can be found in the file: [a relative link](ChallengeDocumentation-DSormani.pdf)
+
+The backend API itself is in the /api-expense directory.
+
+To run:
+1. Go to /api-expense and run mvn package
+2. Run java -jar target\CodeTest-1.0-SNAPSHOT.jar

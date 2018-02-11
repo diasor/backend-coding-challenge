@@ -25,18 +25,6 @@ public class ExpenseJSON {
         // Do not remove
     }
 
-    /*
-    public ExpenseJSON(String date, BigDecimal amount, BigDecimal vat, String currency, String currencySymbol, String reason, String user) {
-        this.id = 10;
-        this.date = date;
-        this.amount = amount;
-        this.vat = vat;
-        this.currency = currency;
-        this.currencySymbol = currencySymbol;
-        this.reason = reason;
-        this.user = user;
-    }
-*/
     public ExpenseJSON(int id, String date, String amount, BigDecimal vat, String currency, String currencySymbol, String reason, String user) {
         this.id = id;
         this.date = date;

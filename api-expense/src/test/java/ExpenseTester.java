@@ -1,11 +1,10 @@
-
 import com.engage.codetest.api.ExpenseJSON;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dropwizard.jackson.Jackson;
 import org.junit.Test;
-import scala.util.parsing.combinator.testing.Str;
 
 import java.math.BigDecimal;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -13,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Created: February 07, 2018
  * Last Updated: February 08, 2018
  * Description: The ExpenseTester class implements tests for serialization and deserialization of
- *              ExpenseJSON objects.
+ * ExpenseJSON objects.
  */
 public class ExpenseTester {
     private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
@@ -41,7 +40,7 @@ public class ExpenseTester {
                 "\"user\" :\"diana\" \n" +
                 "}";
         final String expected = MAPPER.writeValueAsString(
-                        MAPPER.readValue(expenseExample, ExpenseJSON.class));
+                MAPPER.readValue(expenseExample, ExpenseJSON.class));
 
         assertThat(MAPPER.writeValueAsString(expense)).isEqualTo(expected);
     }

@@ -1,7 +1,8 @@
 node_modules
 build
 static
-api-expense/.idea
+api-expense/.idea/libraries
+api-expense/.idea/workspace.xml
 .idea
 api-expense/target
 package-lock.json

@@ -35,6 +35,7 @@ public class ApiResult<T> {
         this.isOk = false;
         this.error = new ErrorResult(errorDescription, errorCode);
     }
+
     @JsonProperty
     public T getData() {
         return data;
@@ -61,4 +62,5 @@ public class ApiResult<T> {
     public void setIsOk(boolean isOk) {
         this.isOk = isOk;
     }
+
 }

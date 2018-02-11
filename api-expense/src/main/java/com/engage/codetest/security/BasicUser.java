@@ -11,7 +11,7 @@ import java.security.Principal;
 public class BasicUser implements Principal {
     private String userName;
 
-    BasicUser(String userName) {
+    public BasicUser(String userName) {
         this.userName = userName;
     }
 

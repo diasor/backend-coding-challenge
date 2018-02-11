@@ -12,19 +12,34 @@ import java.util.*;
  *              The results of the services are presented with this json format.
  */
 public class ExpenseJSON {
-    private String date;                // Date and time of the invoice date
-    private BigDecimal amount;          // The amount of the expense
-    private BigDecimal vat;             // The vat amount
-    private String currency;            // currency code
-    private String currencySymbol;      // currency symbol
-    private String reason;              // Reason for the expense
-    private String user;                // User
+    private int id;                 // This id is only created with the purpose of returning the id assigned when creating a new expense
+    private String date;            // Date and time of the invoice date
+    private BigDecimal amount;      // The amount of the expense
+    private BigDecimal vat;         // The vat amount
+    private String currency;        // currency code
+    private String currencySymbol;  // currency symbol
+    private String reason;          // Reason for the expense
+    private String user;            // User
+
 
     public ExpenseJSON(){
         // Do not remove
     }
 
+    /*
     public ExpenseJSON(String date, BigDecimal amount, BigDecimal vat, String currency, String currencySymbol, String reason, String user) {
+        this.id = 10;
+        this.date = date;
+        this.amount = amount;
+        this.vat = vat;
+        this.currency = currency;
+        this.currencySymbol = currencySymbol;
+        this.reason = reason;
+        this.user = user;
+    }
+*/
+    public ExpenseJSON(int id, String date, BigDecimal amount, BigDecimal vat, String currency, String currencySymbol, String reason, String user) {
+        this.id = id;
         this.date = date;
         this.amount = amount;
         this.vat = vat;
@@ -62,5 +77,9 @@ public class ExpenseJSON {
 
     public String getUser() {
         return user;
+    }
+
+    public int getId() {
+        return id;
     }
 }

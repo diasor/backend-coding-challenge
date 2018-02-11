@@ -12,7 +12,6 @@ import org.skife.jdbi.v2.tweak.ResultSetMapper;
  * Description: The ExpenseMapper class implements the mapping between the ExpenseDaoBean class,
  *              which contains all the data for a given Expense, and the ResultSet from
  *              the dadtabase.
- *              // todo verificar desc
  */
 public class ExpenseMapper implements ResultSetMapper<ExpenseDaoBean>{
     private static final String ID = "id";
@@ -26,16 +25,6 @@ public class ExpenseMapper implements ResultSetMapper<ExpenseDaoBean>{
     public ExpenseDaoBean map(int i, ResultSet resultSet, StatementContext statementContext)
             throws SQLException {
 
-        // todo turn into log
-        /*
-        System.out.println("Llega hasta MAPPER");
-        System.out.println(resultSet.getInt(ID));
-        System.out.println("************* DATE " + resultSet.getDate(DATE));
-        System.out.println("************* AMOUNT " + resultSet.getBigDecimal(AMOUNT));
-        System.out.println("************* VAT " + resultSet.getBigDecimal(AMOUNT_VAT));
-        System.out.println("************* CURRENCY " + resultSet.getString(CURRENCY));
-        System.out.println("************* REASON " + resultSet.getString(REASON));
-        */
         return new ExpenseDaoBean(resultSet.getInt(ID), resultSet.getDate(DATE).toLocalDate(), resultSet.getBigDecimal(AMOUNT),
                 resultSet.getBigDecimal(AMOUNT_VAT), resultSet.getString(CURRENCY), resultSet.getString(REASON), resultSet.getString(USER));
         }

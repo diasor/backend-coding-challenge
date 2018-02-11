@@ -1,5 +1,6 @@
 package com.engage.codetest.security;
 
+import com.engage.codetest.ExpensesApplication;
 import io.dropwizard.auth.AuthenticationException;
 import io.dropwizard.auth.Authenticator;
 import io.dropwizard.auth.basic.BasicCredentials;
@@ -23,11 +24,12 @@ public class UserAuthenticator implements Authenticator<BasicCredentials, BasicU
      */
     @Override
     public Optional<BasicUser> authenticate(BasicCredentials credentials) throws AuthenticationException {
+        ExpensesApplication.expenseLogger.debug("Checking credentials: %s, %s", credentials.getUsername(), credentials.getPassword());
         if ("secret".equals(credentials.getPassword())) {
             BasicUser buser = new BasicUser(credentials.getUsername());
             return Optional.of(buser);
         }
-        // todo log failed auth attempt
+        ExpensesApplication.expenseLogger.warn("Failed authentication attempt for user %s", credentials.getUsername());
         return Optional.empty();
     }
 

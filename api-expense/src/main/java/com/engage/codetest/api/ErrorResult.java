@@ -9,6 +9,10 @@ public class ErrorResult {
         this.errorCode = errorCode;
     }
 
+    public  ErrorResult(){
+        // Do not REMOVE. Created for  testing with mockito purposes
+    }
+
     public String getErrorDescription() {
         return errorDescription;
     }

@@ -1,6 +1,7 @@
 package com.engage.codetest.services;
 
 import com.engage.codetest.ExpensesApplication;
+import com.engage.codetest.api.GeneralSettings;
 import com.engage.codetest.dao.ExpenseDaoBean;
 import com.engage.codetest.dao.ExpenseDAO;
 import org.skife.jdbi.v2.DBI;
@@ -29,11 +30,12 @@ public final class ExpenseService {
     private static final String EMPTY_DATE = "An Expense can not be created with a null date.";
     private static final String EMPTY_AMOUNT = "An Expense can not be created with an amount with value ZERO.";
     private static final String EMPTY_REASON = "An Expense can not be created with an empty Reason.";
-    private static final String INVALID_CURRENCY = "The accepted values for the currency field are: GBP, EUR or empty";
+    public static final String INVALID_CURRENCY = "The accepted values for the currency field are: GBP, EUR or empty";
     private static final String DATABASE_UNEXPECTED_ERROR =
             "Unexpected error occurred while attempting to reach the database. Details: ";
 
     private static DBI dbi;
+    private static final String DEFAULT_CURRENCY = "GBP";
 
     private ExpenseService() { }
 
@@ -66,7 +68,7 @@ public final class ExpenseService {
             ExpenseDAO dao = handle.attach(ExpenseDAO.class);
             ExpenseDaoBean expDao = dao.getExpense(id);
             if (expDao == null) {
-                throw new ObjectNotFoundException(id, "ExpenseJSON");
+                throw new ObjectNotFoundException(id, "getExpenseById failed");
             }
             return expDao;
         }
@@ -79,35 +81,11 @@ public final class ExpenseService {
      *      - and the reason
      */
     @Transaction
-    //public static ExpenseDaoBean createExpense(ExpenseDaoBean expDao) throws InvocationTargetException, IllegalAccessException {
     public static ExpenseDaoBean createExpense(LocalDate expenseDate, BigDecimal expenseAmount, String currencyCode, String expenseReason, String user)
             throws InvocationTargetException, IllegalAccessException {
         try (Handle handle = dbi.open()) {
-            String newCurrCode = currencyCode;
-            if (expenseDate == null){
-                // An Expense can not be created with a null date
-                throw new InvalidInputException("date", EMPTY_DATE);
-            }
-            if (expenseAmount.equals(BigDecimal.ZERO)){
-                // An Expense can not be created with an Amount with value ZERO
-                throw new InvalidInputException("amount", EMPTY_AMOUNT);
-            }
-            if ((expenseReason == null) || expenseReason.isEmpty()) {
-                // An Expense can not be created with an empty Reason
-                throw new InvalidInputException("reason", EMPTY_REASON);
-            }
-
-            if ((newCurrCode == null) || newCurrCode.isEmpty()) {
-                newCurrCode = "GBP";
-            }
-            else {
-                if ((!newCurrCode.equals("GBP")) && (!newCurrCode.equals("EUR"))) {
-                    // An Expense has only 3 valid values for the currency: GBP, EUR or empty.
-                    throw new InvalidInputException("currency", INVALID_CURRENCY);
-                }
-            }
-            // Once the input fields has been checked, the ExpenseDaoBean object is created
-            ExpenseDaoBean expDao = new ExpenseDaoBean(expenseDate, expenseAmount, newCurrCode, expenseReason, user);
+            // The parameters are validated, and if they are correct then a ExpenseDaoBen object is build
+            ExpenseDaoBean expDao = buildExpenseDaoBean(expenseDate, expenseAmount, currencyCode, expenseReason, user);
 
             ExpenseDAO dao = handle.attach(ExpenseDAO.class);
             // The record in the "expense" table is created
@@ -118,6 +96,54 @@ public final class ExpenseService {
             ExpensesApplication.expenseLogger.info("A new Expense has been created with ID: " + generatedId);
             return expDao;
         }
+    }
+
+    public static ExpenseDaoBean buildExpenseDaoBean(LocalDate expenseDate, BigDecimal expenseAmount, String currencyCode, String expenseReason, String user) {
+        if (expenseDate == null){
+            // An Expense can not be created with a null date
+            throw new InvalidInputException("date", EMPTY_DATE);
+        }
+        if (expenseAmount.equals(BigDecimal.ZERO)){
+            // An Expense can not be created with an Amount with value ZERO
+            throw new InvalidInputException("amount", EMPTY_AMOUNT);
+        }
+        if ((expenseReason == null) || expenseReason.isEmpty()) {
+            // An Expense can not be created with an empty Reason
+            throw new InvalidInputException("reason", EMPTY_REASON);
+        }
+        /**
+         * Currency controls:
+         * The currency CAN NOT be null. If it is, then it will be set by default to GBP
+         * If the currency code is EUR, the amounts will be translated to GBP anyway, so the
+         * currency code will still be GPB.
+          */
+        // GBP is the default currency
+        if ((currencyCode == null) || currencyCode.isEmpty()) {
+            currencyCode = "GBP";
+        }
+        // Only EUR or GBP are accepted currencies for now.
+        if ((!currencyCode.equals("GBP")) && (!currencyCode.equals("EUR"))) {
+            // An Expense has only 3 valid values for the currency: GBP, EUR or empty.
+            throw new InvalidInputException("currency", INVALID_CURRENCY);
+        }
+
+        // we always convert to GBP ( if necessary )
+        if (!currencyCode.equals(DEFAULT_CURRENCY)){
+            // If the amount is not specified in pounds, then the only other valid option is that it was
+            // specified in EUR. Then the amount must be converted to GBP
+            // todo control / ceate an exception if thee convert fails
+            expenseAmount = CurrencyService.convertEURToGBP(expenseAmount);
+        }
+        BigDecimal expenseAmountVAT = calcVAT(expenseAmount);
+
+        // Once the input fields has been checked, the ExpenseDaoBean object is created
+        return new ExpenseDaoBean(expenseDate, expenseAmount, expenseAmountVAT, DEFAULT_CURRENCY, expenseReason, user);
+    }
+
+    private static BigDecimal calcVAT(BigDecimal expenseAmount) {
+        // VAT calculations
+        BigDecimal vat = GeneralSettings.getVAT().divide(BigDecimal.valueOf(100));
+        return expenseAmount.multiply(vat).stripTrailingZeros();
     }
 
     /**

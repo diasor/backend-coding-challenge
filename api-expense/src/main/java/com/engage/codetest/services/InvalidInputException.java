@@ -14,16 +14,25 @@ public class InvalidInputException extends RuntimeException {
     private String reason;          // Reason for failing validation: null value, not a date, etc.
 
     public InvalidInputException(String inputName, String reason) {
+        super("Input " + inputName + ": " + reason);
+
         this.inputName = inputName;
         this.reason = reason;
     }
 
     public String getDescription() {
-        return "Input: " + this.inputName + ": " + this.reason;
+        return this.getMessage();
     }
 
     public String getErrorCode() {
         return this.inputCode;
     }
 
+    public String getInputName() {
+        return inputName;
+    }
+
+    public String getReason() {
+        return reason;
+    }
 }

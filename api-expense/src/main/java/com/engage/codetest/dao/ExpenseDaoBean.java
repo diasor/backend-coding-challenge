@@ -23,64 +23,31 @@ public class ExpenseDaoBean {
     private String currencyCode;            // The currency ISO 4217 string code
     private String expenseReason;           // Reason for the expense
     private String expenseUser;             // User who generated the expense
-
     private Currency currency;
 
     public ExpenseDaoBean(int id, LocalDate expenseDate, BigDecimal expenseAmount, BigDecimal expenseAmountVAT, String currencyCode, String expenseReason, String expenseUser) {
         this.id = id;
         this.expenseDate = expenseDate;
-        this.expenseAmount = expenseAmount;
-        this.expenseAmountVAT = expenseAmountVAT;
+        this.expenseAmount = expenseAmount.stripTrailingZeros();
+        this.expenseAmountVAT = expenseAmountVAT.stripTrailingZeros();
         this.currencyCode = currencyCode;
+        this.currency = Currency.getInstance(this.currencyCode);
         this.expenseReason = expenseReason;
         this.expenseUser = expenseUser;
 
-        // The currency CAN NOT be null. If it is, then it will be set by default to GBP
-        if ((currencyCode == null) || currencyCode.isEmpty()) {
-            this.currencyCode = "GBP";
-        } else {
-            this.currencyCode = currencyCode.toUpperCase();
-        }
-        this.currency = Currency.getInstance(this.currencyCode);
-
-        // This constructor DOES NOT calculate vat amounts or currency rates becaused is only called when obtaining
+        // This constructor DOES NOT calculate vat amounts or currency rates because is only called when obtaining
         // expenses from the database (that is why the Expense already has an ID)
     }
 
-    public ExpenseDaoBean(LocalDate expenseDate, BigDecimal expenseAmount, String currencyCode, String expenseReason, String user) {
+    public ExpenseDaoBean(LocalDate expenseDate, BigDecimal expenseAmount, BigDecimal expenseAmountVAT, String currencyCode, String expenseReason, String user) {
         this.expenseDate = expenseDate;
-        this.expenseAmount = expenseAmount;
+        this.expenseAmount = expenseAmount.stripTrailingZeros();
+        this.expenseAmountVAT = expenseAmountVAT.stripTrailingZeros();
+        this.currencyCode = currencyCode;
+        this.currency = Currency.getInstance(this.currencyCode);
         this.expenseReason = expenseReason;
         this.expenseUser = user;
-        // The currency CAN NOT be null. If it is, then it will be set by default to GBP
-        if ((currencyCode == null) || currencyCode.isEmpty()) {
-            this.currencyCode = "GBP";
-        } else {
-            this.currencyCode = currencyCode.toUpperCase();
-        }
-        // Only EUR or GBP are accepted currencies for now.
-        if (!currencyCode.equals("GBP")){
-            this.currency = Currency.getInstance(this.currencyCode);
-            // Vat calculation for the new converted amount using the currency rates
-            currencyCalculations();
-        }
-        // The VAT is calculated based on the original expenseAmount if the currency is GBP
-        // OR based on the recently calculated new expenseAmount converted to the new currency
-        calcExpenseAmountVAT();
-    }
 
-    /**
-     * This method is used to handle the currency convertions, if necessary.
-     * In case the currency code is NOT "GBP" (which is the code corresponding to
-     * the United Kingdom pounds), then this methos will consume a rest endpoint to
-     * get the official convertion rates and actually convert the expenseAmount property
-     * to the currency code stored in currencyCode.
-     */
-    public void currencyCalculations(){
-        if (!this.currency.getCurrencyCode().equals("GBP")) {
-            // if the amount is not specified in pounds, then it must be converted
-            this.expenseAmount = CurrencyService.convert(this.expenseAmount, "GBP");
-        }
     }
 
     public ExpenseDaoBean(){
@@ -128,8 +95,4 @@ public class ExpenseDaoBean {
         return currency;
     }
 
-    private void calcExpenseAmountVAT(){
-        BigDecimal vat = GeneralSettings.getVAT().divide(BigDecimal.valueOf(100));
-        this.expenseAmountVAT =  expenseAmount.multiply(vat);
-    }
 }

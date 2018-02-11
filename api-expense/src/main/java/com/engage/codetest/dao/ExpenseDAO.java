@@ -48,7 +48,7 @@ public interface ExpenseDAO {
      *      - if the table exists
      *      - if the columns required exist
      */
-    @SqlQuery(value = "select id, expense_date, expense_amount, expense_amount_VAT, amount_currency_ISO, expense_reason, expense_user " +
+    @SqlQuery("select id, expense_date, expense_amount, expense_amount_VAT, amount_currency_ISO, expense_reason, expense_user " +
             "from expenses limit 1;")
     List<ExpenseDaoBean> getOneExpenseCheck();
 }

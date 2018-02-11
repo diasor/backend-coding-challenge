@@ -1,7 +1,7 @@
 README
 ====
 
-All the required documentation can be found in the file: [a relative link](ChallengeDocumentation-DSormani.pdf)
+All the required documentation can be found in this file: [documentation](ChallengeDocumentation-DSormani.pdf)
 
 The backend API itself is in the /api-expense directory.
 

@@ -18,8 +18,8 @@ import java.util.List;
  * @author Diana Sormani
  * Created: January 28, 2018
  * Last Updated: February 05, 2018
- * Description: The ExpenseService class contains the logic associated with de Expense rest service
- *              maniulation.
+ * Description: The ExpenseService class contains the logic associated with de Expense REST service
+ *              manipulation.
  *              It was created to be used as a static class for the ExpenseResource class.
  *              It implements the following methods for the ExpenseResource to consume and public:
  *                  * getUserExpenses
@@ -131,7 +131,7 @@ public final class ExpenseService {
         if (!currencyCode.equals(DEFAULT_CURRENCY)){
             // If the amount is not specified in pounds, then the only other valid option is that it was
             // specified in EUR. Then the amount must be converted to GBP
-            // todo control / ceate an exception if thee convert fails
+            // todo control / create an exception if the convert fails
             expenseAmount = CurrencyService.convertEURToGBP(expenseAmount);
         }
         BigDecimal expenseAmountVAT = calcVAT(expenseAmount);

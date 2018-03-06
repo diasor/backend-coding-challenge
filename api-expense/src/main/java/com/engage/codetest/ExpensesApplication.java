@@ -52,7 +52,7 @@ public class ExpensesApplication extends Application<ExpensesConfiguration> {
     }
 
     /**
-     * This method adds the C.O.R.S. headers so the frontend can consume the rest services
+     * This method adds the C.O.R.S. headers so the front end can consume the rest services
      */
     private static void enableCorsHeaders(Environment env) {
 

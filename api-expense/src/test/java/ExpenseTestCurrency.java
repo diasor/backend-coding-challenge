@@ -96,15 +96,15 @@ public class ExpenseTestCurrency {
     }
 
     /**
-     * Test 3) This method tests that when creating a new ExpenseDaoBean object with the c`urrency code value = EUR,
+     * Test 3) This method tests that when creating a new ExpenseDaoBean object with the currency code value = EUR,
      * the system will fill currency symbol as and calculate the vat according to the vat
      * percentage.
      */
     @Test
     public void testExpenseWithEURCurrency() throws IOException {
         BigDecimal amount = BigDecimal.valueOf(1000);
-        String currency = "EUR";   // Currency code = YEN
-        String reason = "Creating an expense with YEN as currency code.";
+        String currency = "EUR";   // Currency code = EUR
+        String reason = "Creating an expense with EUR as currency code.";
         String user = "diana";
         final LocalDate expLocalDate;
         {

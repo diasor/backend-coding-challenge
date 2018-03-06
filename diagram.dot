@@ -1,0 +1,24 @@
+digraph hierarchy {
+
+node[shape=record,style=filled,fillcolor=gray95]
+
+1[label = "{ExpenseResource||+ getUserExpenses(@Auth BasicUser):ApiResult\<List\<ExpenseJSON\>\> \n 
+								+ getExpenseById(int id): ApiResult\<ExpenseJSON\> \n
+								+ createExpense(ExpenseJSON expenseJSON, @Auth BasicUser): ApiResult\<ExpenseJSON\> }"]
+2[label = "{ExpenseService|- DBI dbi \n 
+						  |+ getUserExpenses(String user):List\<ExpenseDaoBean\> \n
+						   + getExpenseById(int id): ExpenseDaoBean \n
+						   + createExpense(LocalDate expenseDate, BigDecimal expenseAmount, String currencyCode, String expenseReason, String user):ExpenseDaoBean }"]
+						   
+3[label = "{\<\<interface\>\> \n ExpenseDAO||+ getMyExpenses(@Bind(\"user\") final String user):List\<ExpenseDaoBean\> \n 
+						   + getExpense(@Bind(\"id\") final int id):ExpenseDaoBean \n
+					       + createExpense(@BindBean final ExpenseDaoBean exp):int \n
+							+ getOneExpenseCheck():List\<ExpenseDaoBean\> }"]
+
+
+1->2 [arrowType=open, style=dashed]
+2->3 [arrowType=open, style=dashed]
+
+
+
+}

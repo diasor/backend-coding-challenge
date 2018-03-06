@@ -153,7 +153,7 @@ public class ExpenseResourceTest {
     /**
      * Test 3) This method tests the api /expenses/{id} with an ID that does not exists (INVALID).
      * It checks that it returns an ApiResult<ExpenseJSON> object indicating an "isOK" flag
-     * in false and an emptu list.
+     * in false and an empty list.
      */
     @Test
     public void testGetInvalidExpense() throws IOException {

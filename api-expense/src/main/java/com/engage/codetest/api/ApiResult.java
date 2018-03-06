@@ -5,11 +5,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Diana Sormani
  * Created: January 31, 2018
  * Last Updated: February 05, 2018
- * Description: The ApiResult class was created to interact directly with the frontend.
+ * Description: The ApiResult class was created to interact directly with the front end.
  *              It has three members:
  *                  - The first is a boolean indicating whether the service called was successful or not
- *                  - The second is an generic object intended to have an ExpenseJSON object containgin the expense
- *                  information with attributes named exactly as they were in the frontend. If the "isOk" field is true,
+ *                  - The second is an generic object intended to have an ExpenseJSON object containing the expense
+ *                  information with attributes named exactly as they were in the front end. If the "isOk" field is true,
  *                  then the information retrieved can be found here.
  *                  - The third member, is an ErrorResult object, containing all the error information in case
  *                  the "isOk" field is false.

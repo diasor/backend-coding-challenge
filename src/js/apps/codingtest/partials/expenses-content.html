@@ -45,13 +45,16 @@
 	</form>
 
 	<h3>Submitted expenses</h3>
+
 	<div class="list-table expenses-data">
+
 		<div class="header-row">
 			<div class="col-4">Date</div>
 			<div class="col-4 figures">Amount (inc. VAT)</div>
 			<div class="col-2 figures">VAT</div>
 			<div class="col-15">Reason</div>
 		</div>
+
 		<div ng-repeat="expense in expenses" class="body-row">
 			<div class="col-4">{{expense.date | date:'dd MMM yyyy'}}</div>
 			<!-- DS: The currency symbol is added to the grid. The amount and the currency will be
@@ -61,5 +64,6 @@
 			<div class="col-2 figures">{{expense.vat}}</div>
 			<div class="col-15">{{expense.reason}}</div>
 		</div>
+
 	</div>
 </div>

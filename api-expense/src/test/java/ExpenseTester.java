@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Created: February 07, 2018
  * Last Updated: February 08, 2018
  * Description: The ExpenseTester class implements tests for serialization and deserialization of
- * ExpenseJSON objects.
+ *              ExpenseJSON objects.
  */
 public class ExpenseTester {
     private static final ObjectMapper MAPPER = Jackson.newObjectMapper();

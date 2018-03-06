@@ -12,7 +12,7 @@ import java.math.BigDecimal;
  * @author Diana Sormani
  * Created: February 04, 2018
  * Last Updated: February 05, 2018
- * Description: The ConverterResource class implements a rest endpoint that returns the
+ * Description: The ConverterResource class implements a REST endpoint that returns the
  *              conversion rate from EUR to GBP
  *              It can only be accessed via an http GET request.
  */

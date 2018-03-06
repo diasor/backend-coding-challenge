@@ -7,8 +7,8 @@ import java.math.BigDecimal;
  * Created: January 28, 2018
  * Last Updated: February 05, 2018
  * Description: The ExpenseJSON class was created to interact directly with the frontend. Its memmbers are named
- * exactly as they were in the frontend.
- * The results of the services are presented with this json format.
+ *              exactly as they were in the frontend.
+ *              The results of the services are presented with this json format.
  */
 public class ExpenseJSON {
     private int id;                 // This id is only created with the purpose of returning the id assigned when creating a new expense

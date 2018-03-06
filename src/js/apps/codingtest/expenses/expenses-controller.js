@@ -10,6 +10,7 @@ var app = angular.module("expenses.controller", []);
 
 app.controller("ctrlExpenses", ["$rootScope", "$scope", "config", "restalchemy", '$timeout',
     function ExpensesCtrl($rootScope, $scope, $config, $restalchemy, $timeout) {
+
 	// Update the headings
 	$rootScope.mainTitle = "Expenses";
 	$rootScope.mainHeading = "Expenses";
@@ -23,6 +24,7 @@ app.controller("ctrlExpenses", ["$rootScope", "$scope", "config", "restalchemy",
     $scope.doFade = false;
     $scope.contentMessage = " ";
 
+    // DS: the function displayMsg is added to show and fade a new message in the form.
     $scope.displayMsg = function(){
         $scope.doFade = false;
         $timeout(function(){
@@ -32,7 +34,7 @@ app.controller("ctrlExpenses", ["$rootScope", "$scope", "config", "restalchemy",
         }, 2500);
       };
 
-    // DS: rest endpoints
+    // DS: REST endpoints
     var restVatPge = $restalchemy.init({ root: $config.apiroot }).at("vat");
 	var restExpenses = $restalchemy.init({ root: $config.apiroot }).at("expenses");
 
@@ -62,6 +64,7 @@ app.controller("ctrlExpenses", ["$rootScope", "$scope", "config", "restalchemy",
 		if ($scope.expensesform.$valid) {
 			// Post the expense via REST
 			restExpenses.post($scope.newExpense).then(function(result) {
+			    // DS: If the rest endpoint isOK, then a new message is displayed showing the user the result of the transaction
 			    if (result.isOk){
             	    $scope.contentMessage = "The Expense was successfully created.";
             	    $scope.showMsg = true;
